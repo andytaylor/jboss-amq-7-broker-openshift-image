@@ -356,7 +356,10 @@ objects:
               - "/bin/bash"
               - "-c"
               - "/opt/amq/bin/readinessProbe.sh"
-          image: ${IMAGE}              
+          image: ${IMAGE}
+          imagePullPolicy: Always
+          imagePullSecrets:
+            - name: ataylor-myopenshift-pull-secret
           name: ${APPLICATION_NAME}-amq
           ports:
           - containerPort: 8161
@@ -483,7 +486,7 @@ parameters:
   displayName: Image
   name: IMAGE
   required: true
-  value: registry.redhat.io/amq7/amq-broker:7.7
+  value: quay.io/ataylor/amq-broker-77-openshift
 - description: Name of a secret containing credential data such as usernames and passwords
   displayName: Secret Name
   name: AMQ_CREDENTIAL_SECRET

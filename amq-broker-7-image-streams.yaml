@@ -26,4 +26,4 @@ items:
         version: '7.7'
       from:
         kind: DockerImage
-        name: registry.redhat.io/amq7/amq-broker:7.7
+        name: quay.io/ataylor/amq-broker-77-openshift

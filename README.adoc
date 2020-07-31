@@ -31,3 +31,48 @@ $ docker login -u developer -p $(oc whoami -t) openshift-docker-ip:5000
 $ docker tag amq-broker-7/amq-broker-77-openshift:latest openshift-docker-ip:5000/broker/amq-broker-77-openshift:7.7
 $ docker push openshift-docker-ip:5000/broker/amq-broker-77-openshift:7.7
 ```
+
+git remote add upstream git@github.com:jboss-container-images/jboss-amq-7-broker-openshift-image.git
+
+git checkout amq-broker-77-dev
+
+from: "amq-broker-7/amq-broker-77"
+
+https://brewweb.engineering.redhat.com/brew/search
+
+wget http://download.eng.bos.redhat.com/brewroot/packages/org.jolokia-jolokia/1.6.2.redhat_00002/1/maven/org/jolokia/jolokia-jvm/1.6.2.redhat-00002/jolokia-jvm-1.6.2.redhat-00002-agent.jar
+wget http://download.eng.bos.redhat.com/brewroot/packages/org.openshift.ping-openshift-ping-parent/1.2.6.Final_redhat_1/1/maven/org/openshift/ping/openshift-ping-common/1.2.6.Final-redhat-1/openshift-ping-common-1.2.6.Final-redhat-1.jar
+wget http://download.eng.bos.redhat.com/brewroot/packages/org.openshift.ping-openshift-ping-parent/1.2.6.Final_redhat_1/1/maven/org/openshift/ping/openshift-ping-dns/1.2.6.Final-redhat-1/openshift-ping-dns-1.2.6.Final-redhat-1.jar
+wget http://download.eng.bos.redhat.com/brewroot/packages/io.netty-netty-tcnative-parent/2.0.29.Final_redhat_00001/1/maven/io/netty/netty-tcnative/2.0.29.Final-redhat-00001/netty-tcnative-2.0.29.Final-redhat-00001-linux-x86_64-fedora.jar
+
+
+cekit-cache add --md5 `md5sum jolokia-jvm-1.6.2.redhat-00002-agent.jar`
+cekit-cache add --md5 `md5sum openshift-ping-common-1.2.6.Final-redhat-1.jar`
+cekit-cache add --md5 `md5sum openshift-ping-dns-1.2.6.Final-redhat-1.jar`
+cekit-cache add --md5 `md5sum netty-tcnative-2.0.29.Final-redhat-00001-linux-x86_64-fedora.jar`
+
+
+
+2020-06-16 11:15:31,947 cekit        WARNING  No value found for 'name' in '{"md5": "760f2fbaf6b142192f3cee2c99bfcbf8", "url": "jolokia-jvm-1.6.2.redhat-00002-agent.jar"}' artifact; using auto-generated value of 'jolokia-jvm-1.6.2.redhat-00002-agent.jar'
+Artifact jolokia-jvm-1.6.2.redhat-00002-agent.jar cached with UUID 'b78eb888-8141-4214-ab4b-5f44d10e4e34'
+
+
+ WARNING  Cekit is not able to fetch resource 'openshift-ping-common' automatically. Please use cekit-cache command to add this artifact manually.
+2020-06-16 11:15:51,806 cekit        ERROR    Error copying resource: 'openshift-ping-common'. See logs for more info.
+
+
+oc new-project andytee-broker
+oc create -n andytee-broker -f amq-broker-7-image-streams.yaml
+oc create -f quayio/ataylor-myopenshift-secret.yml
+oc secrets link --for=pull default ataylor-myopenshift-pull-secret
+oc secrets link --for=pull deployer ataylor-myopenshift-pull-secret
+oc secrets link --for=pull builder ataylor-myopenshift-pull-secret
+oc process -n andytee-broker -f templates/amq-broker-77-basic.yaml -p APPLICATION_NAME=broker-app -p AMQ_USER=admin -p AMQ_PASSWORD=password  | oc create -n andytee-broker -f -
+
+
+Failed to pull image "quay.io/ataylor/amq-broker-77-openshift": [rpc error: code = Unknown desc = Error reading manifest latest in quay.io/ataylor/amq-broker-77-openshift: manifest unknown: manifest unknown, rpc error: code = Unknown desc = Error reading manifest latest in quay.io/ataylor/amq-broker-77-openshift: unauthorized: access to the requested resource is not authorized]
+
+
+
+ oc login -u kubeadmin -p NWrZI-23LT2-2Dc6B-TpqWZ --server=https://api.secondcluster.openshift-aws.rhocf-dev.com:6443
+
